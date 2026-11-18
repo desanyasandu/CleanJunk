@@ -11,8 +11,7 @@ New-Item -ItemType Directory $stage -Force | Out-Null
 
 $files = 'CleanJunk.ps1','CleanJunk.bat','CleanJunk-Text.bat','README.md','LICENSE','CHANGELOG.md'
 foreach ($f in $files) { Copy-Item "$root\$f" $stage }
-New-Item -ItemType Directory "$stage\docs" -Force | Out-Null
-Copy-Item "$root\docs\screenshot.png" "$stage\docs" -ErrorAction SilentlyContinue
+Copy-Item "$root\docs" $stage -Recurse -ErrorAction SilentlyContinue
 
 Compress-Archive -Path "$dist\stage\CleanJunk-v$ver" -DestinationPath $zip
 Remove-Item "$dist\stage" -Recurse -Force

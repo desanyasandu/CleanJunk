@@ -8,15 +8,15 @@ No installer, no background service, no telemetry, no network access. It is one 
 
 ## Download and run
 
-1. Download `CleanJunk-v1.0.0.zip` from the [Releases](../../releases) page and extract it.
+1. Download the latest `CleanJunk-vX.Y.Z.zip` from the [Releases](../../releases) page and extract it.
 2. Double-click **`CleanJunk.bat`** and click **Yes** at the admin prompt (admin is only needed for the Windows temp/log folders).
 3. Wait for the scan, tick what you want to remove, press **Clean selected**, and confirm.
 
 Requires Windows 10 or 11. Nothing else to install (uses the PowerShell that ships with Windows).
 
 > **"Windows protected your PC" / antivirus warning?** The files are not code-signed (signing certificates cost money), and a script that asks for admin and deletes files looks suspicious to heuristics. Before running, you can:
-> - read `CleanJunk.ps1` (about 450 lines, no obfuscation, no network calls);
-> - verify the download: `Get-FileHash .\CleanJunk-v1.0.0.zip -Algorithm SHA256` must match the `.sha256` file on the release;
+> - read `CleanJunk.ps1` (about 740 lines, no obfuscation, no network calls);
+> - verify the download: `Get-FileHash .\CleanJunk-v1.1.0.zip -Algorithm SHA256` must match the `.sha256` file on the release;
 > - right-click the zip, **Properties**, tick **Unblock**, then extract.
 
 ## What it cleans
@@ -37,7 +37,22 @@ Requires Windows 10 or 11. Nothing else to install (uses the PowerShell that shi
 
 **Optional** (unticked; regenerates, but costs you a re-download or a slower first launch)
 
-Chrome on-device AI model, Unity cache, `uv` cache, JetBrains caches/logs, VS Code caches, Claude app cache, Puppeteer browser downloads, Windows installer package cache (some programs may ask for their installer when you repair them), and the Recycle Bin (**permanent**).
+Chrome on-device AI model, Unity cache, Gradle caches, NuGet/Yarn caches, `uv` cache, JetBrains caches/logs, VS Code caches, Claude app cache, Puppeteer browser downloads, Windows installer package cache (some programs may ask for their installer when you repair them), and the Recycle Bin (**permanent**).
+
+Also optional:
+
+| Item | What happens |
+|---|---|
+| Scattered `.dmp` / `.etl` files | Crash dumps and trace logs anywhere under `%LOCALAPPDATA%` and `%APPDATA%` |
+| Windows component cleanup | Runs Windows' own `DISM /StartComponentCleanup` to remove superseded update files (needs admin, 5-15 minutes) |
+| Docker unused data | Runs `docker system prune` and `docker builder prune` (stopped containers, unused networks, dangling images, build cache). Docker Desktop must be running. Your images in use and volumes are kept. |
+| Windows.old | Your previous Windows installation. After deleting it you can't roll back to the old version. |
+
+## Find big files
+
+The **Find big files...** button scans the whole system drive and lists the 40 largest files (100 MB and up) and the 40 largest folders. It is **read-only**: select a row and press **Open location** to look at it in Explorer, then decide yourself. Usually the big items are games, videos and downloads, which no cleaner should delete for you.
+
+![Big files window](docs/bigfiles.png)
 
 ## What it never touches
 
@@ -57,6 +72,7 @@ Downloads, Documents, Desktop, Pictures, Videos, browser logins/history/bookmark
 .\CleanJunk.ps1 -ScanOnly            # list sizes, delete nothing
 .\CleanJunk.ps1 -Console             # pick by typing numbers (or use CleanJunk-Text.bat)
 .\CleanJunk.ps1 -Console -MinAgeHours 0   # delete files of any age
+.\CleanJunk.ps1 -BigFiles            # list the largest files and folders, delete nothing
 ```
 
 ## Disclaimer
